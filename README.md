@@ -74,6 +74,23 @@ service user, not an admin; see the plugin's `docs/functions.md` for its role.
 
 Needs Python 3.11+. `mcp` is pinned below 2 (2.x renamed `FastMCP`).
 
+## Run as a web service (Docker)
+
+With `FULLMCP_TRANSPORT=http` the server speaks MCP over streamable HTTP at `/mcp` (health check at
+`/health`), for example in a container next to Moodle. The image is built by `.github/workflows/image.yml`
+and pushed to `ghcr.io/tsopany/fullmcp-server` when a `v*` tag is pushed. Deployment notes for the VM:
+[deploy/lms-vm.md](deploy/lms-vm.md).
+
+| Variable | Meaning |
+|---|---|
+| `FULLMCP_TRANSPORT` | `stdio` (default) or `http` |
+| `FULLMCP_BEARER_TOKEN` | required for `http`, 32+ characters; clients send it as `Authorization: Bearer` |
+| `FULLMCP_ALLOWED_HOSTS` | public host name(s), comma separated; other `Host` headers get 421 |
+| `FULLMCP_HOST`, `FULLMCP_PORT` | bind address (default `127.0.0.1`, image: `0.0.0.0`) and port (`8000`) |
+
+The bearer token is a stopgap; proper MCP auth is OAuth 2.1 and is not built yet.
+`MOODLE_URL` must be the exact site URL: Moodle redirects any other host name.
+
 ## Test
 
 `tests/smoke_e2e.py` drives the server over MCP stdio against a **throwaway** Moodle that has

@@ -18,6 +18,7 @@ All calls hit:
 from __future__ import annotations
 
 import asyncio
+import hmac
 import html as _htmllib
 import os
 import re
@@ -1292,9 +1293,66 @@ if ALLOW_WRITE:
     _register_write_tools()
 
 
+class _BearerAuth:
+    """ASGI wrapper: every HTTP request needs `Authorization: Bearer <token>`, except GET /health.
+
+    A stopgap for v1 (one shared secret). Real MCP auth is OAuth 2.1: replace this with
+    FastMCP's `token_verifier` + `auth` settings once an authorization server exists.
+    """
+
+    def __init__(self, app, token: str):
+        self.app = app
+        self.token = token.encode()
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        if scope["method"] == "GET" and scope["path"] == "/health":
+            await send({"type": "http.response.start", "status": 200,
+                        "headers": [(b"content-type", b"text/plain")]})
+            await send({"type": "http.response.body", "body": b"ok"})
+            return
+        header = dict(scope["headers"]).get(b"authorization", b"")
+        scheme, _, given = header.partition(b" ")
+        if scheme.lower() != b"bearer" or not hmac.compare_digest(given, self.token):
+            await send({"type": "http.response.start", "status": 401, "headers": [
+                (b"content-type", b"text/plain"), (b"www-authenticate", b"Bearer")]})
+            await send({"type": "http.response.body", "body": b"Unauthorized"})
+            return
+        await self.app(scope, receive, send)
+
+
+def _run_http() -> None:
+    """Serve MCP over streamable HTTP at /mcp (FULLMCP_TRANSPORT=http)."""
+    import uvicorn
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    token = os.environ.get("FULLMCP_BEARER_TOKEN", "")
+    if len(token) < 32:
+        raise SystemExit("FULLMCP_BEARER_TOKEN must be set (at least 32 characters) for HTTP mode.")
+    host = os.environ.get("FULLMCP_HOST", "127.0.0.1")
+    port = int(os.environ.get("FULLMCP_PORT", "8000"))
+    # Host-header check: FastMCP only allows localhost unless told the public host name(s).
+    hosts = [h.strip() for h in os.environ.get("FULLMCP_ALLOWED_HOSTS", "").split(",") if h.strip()]
+    mcp.settings.host, mcp.settings.port = host, port
+    mcp.settings.transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=bool(hosts),
+        allowed_hosts=hosts + [f"127.0.0.1:{port}", f"localhost:{port}"],
+        allowed_origins=[],
+    )
+    uvicorn.run(_BearerAuth(mcp.streamable_http_app(), token), host=host, port=port, log_level="info")
+
+
 def main() -> None:
-    """Entry point for the stdio MCP server."""
-    mcp.run()
+    """Entry point: stdio by default, streamable HTTP with FULLMCP_TRANSPORT=http."""
+    transport = os.environ.get("FULLMCP_TRANSPORT", "stdio")
+    if transport == "stdio":
+        mcp.run()
+    elif transport == "http":
+        _run_http()
+    else:
+        raise SystemExit(f"FULLMCP_TRANSPORT must be 'stdio' or 'http', not {transport!r}")
 
 
 if __name__ == "__main__":
