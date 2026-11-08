@@ -1,0 +1,9 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+dist/
+*.egg-info/
