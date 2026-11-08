@@ -4,8 +4,24 @@ For the `tsopany-vm-setup` repo. The server runs as a third service in
 `lms/docker-compose.yaml.template`, on the same `lms_network` as Moodle, so Caddy (already attached
 to `lms_lms_network`) can reach it with no change to `caddy/docker-compose.yaml`.
 
-Prerequisite: the `local_fullmcp` plugin (>= v0.1.1, with the 14 core functions in its service) is
-installed in the Moodle image and upgraded. Without it the server connects but its write tools fail.
+Prerequisites (versions that exist only once their tags are pushed):
+
+- Plugin `local_fullmcp` **v0.1.1 or later**. `v0.1.0` does not have the 14 core functions in its
+  service, so most server tools would fail. Install and the Moodle upgrade are covered by the plugin
+  repo's README; the Moodle image gets it as a layer.
+- Server image `ghcr.io/tsopany/fullmcp-server:0.1.0`, built by the `image` workflow when the
+  `v0.1.0` tag of `moodle-fullmcp-server` is pushed. Until then the image does not exist.
+
+## Order of steps
+
+The token only exists after the plugin is installed, and the compose file needs it, so:
+
+1. Install the plugin (v0.1.1+) in Moodle and run the upgrade.
+2. Do section 1 (Moodle user, role, service, token).
+3. Do section 2 (both secrets in Infisical, whitelist in `lms/secrets.sh`).
+4. Only then add the service (section 3) and deploy `lms`. Rendered with an empty token, the
+   server starts but every Moodle call fails.
+5. Add the Caddy block and DNS (section 4), reload Caddy, run the checks (section 5).
 
 ## 1. Moodle (once, by an admin)
 
