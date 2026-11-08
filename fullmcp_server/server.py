@@ -203,7 +203,7 @@ def _validate_outline(outline: Any) -> list[str]:
 # READ TOOLS (always registered).
 # --------------------------------------------------------------------------- #
 
-SERVER_VERSION = "1.7.0"
+SERVER_VERSION = "0.1.0"
 
 
 @mcp.tool()

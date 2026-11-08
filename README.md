@@ -72,4 +72,16 @@ Write tools are off unless `MOODLE_ALLOW_WRITE=true`. `backup_course` and `resto
 read and write files inside `FULLMCP_FILES_DIR` (default `./fullmcp-files`). The token belongs to a limited
 service user, not an admin; see the plugin's `docs/functions.md` for its role.
 
-Status: alpha. Not yet tested against a Moodle site.
+Needs Python 3.11+. `mcp` is pinned below 2 (2.x renamed `FastMCP`).
+
+## Test
+
+`tests/smoke_e2e.py` drives the server over MCP stdio against a **throwaway** Moodle that has
+the plugin installed (it creates courses). It checks the tool list, creates a course with
+every activity and question type, backup/restore, the file-folder guard, and `build_course`.
+
+    python3.12 -m venv .venv && .venv/bin/pip install -e .
+    FULLMCP_TEST_URL=http://localhost:8080 FULLMCP_TEST_TOKEN=<token of the limited service user> \
+        .venv/bin/python tests/smoke_e2e.py
+
+Status: alpha. The smoke test passes (35 checks) against Moodle 5.3 with a minimal-role user.
