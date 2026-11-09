@@ -204,7 +204,7 @@ def _validate_outline(outline: Any) -> list[str]:
 # READ TOOLS (always registered).
 # --------------------------------------------------------------------------- #
 
-SERVER_VERSION = "0.1.0"
+SERVER_VERSION = "0.1.1"
 
 
 @mcp.tool()
@@ -887,6 +887,31 @@ def _register_write_tools() -> None:
                 "name": name,
                 "summary": summary,
                 "position": position,
+            },
+        )
+
+    @mcp.tool()
+    async def update_section(
+        courseid: int,
+        sectionnum: int,
+        name: str = "",
+        summary: str = "",
+        visible: int = -1,
+    ) -> dict:
+        """⚠️ WRITES LIVE DATA. Rename, re-describe and/or show/hide a course section.
+
+        Requires the local_fullmcp plugin. `sectionnum` is the section number
+        in the course. Leave `name` or `summary` empty to keep them; `visible`
+        = 1 show, 0 hide, -1 leave unchanged. Returns the section id and number.
+        """
+        return await _call(
+            "local_fullmcp_update_section",
+            {
+                "courseid": courseid,
+                "sectionnum": sectionnum,
+                "name": name,
+                "summary": summary,
+                "visible": visible,
             },
         )
 

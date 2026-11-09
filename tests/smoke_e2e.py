@@ -44,7 +44,7 @@ async def main():
             print('tools:', len(tools))
             gone = ['delete_courses','download_file','create_user','delete_users','assign_role','enrol_user','get_grades','get_user_grades','send_message','grade_assignment','get_enrolled_users','get_my_courses']
             leaked = [t for t in gone if t in tools]
-            results.append(not leaked and len(tools) == 36); print('PASS' if not leaked and len(tools)==36 else 'FAIL', 'tool list: 36, none of the removed ones', leaked)
+            results.append(not leaked and len(tools) == 37); print('PASS' if not leaked and len(tools)==37 else 'FAIL', 'tool list: 37, none of the removed ones', leaked)
 
             info = await step('server_info', 'server_info')
             print('   plugin_installed =', info and info.get('plugin_installed'))
@@ -71,6 +71,7 @@ async def main():
             await step('add_matching', 'add_matching_question', quizcmid=qc, name='MA', questiontext='Match', pairs=[{'question':'a','answer':'b'},{'question':'c','answer':'d'}])
             await step('update_activity', 'update_activity', cmid=pg['cmid'], name='Page renamed', visible=1)
             await step('update_page', 'update_page', cmid=pg['cmid'], content='<p>Changed</p>')
+            await step('update_section', 'update_section', courseid=cid, sectionnum=sec['sectionnum'], name='Week 1b', visible=1)
             sec2 = await step('create_section 2', 'create_section', courseid=cid, name='Week 2')
             await step('move_activity', 'move_activity', cmid=pg['cmid'], section=sec2['sectionnum'])
             content = await step('get_course_content', 'get_course_content', courseid=cid)

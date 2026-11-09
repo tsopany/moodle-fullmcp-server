@@ -4,19 +4,24 @@ For the `tsopany-vm-setup` repo. The server runs as a third service in
 `lms/docker-compose.yaml.template`, on the same `lms_network` as Moodle, so Caddy (already attached
 to `lms_lms_network`) can reach it with no change to `caddy/docker-compose.yaml`.
 
+The Moodle container (`erseco/alpine-moodle`) reads its upload limits from environment variables,
+checked in the 5.3.0 image. For 100 MB backups (about 134 MB of base64) set these on the `lms` service:
+`client_max_body_size: 150M`, `post_max_size: 150M`, `upload_max_filesize: 150M`, `memory_limit: 512M`.
+The defaults are 50M, 50M, 50M and 256M.
+
 Prerequisites (versions that exist only once their tags are pushed):
 
-- Plugin `local_fullmcp` **v0.1.1 or later**. `v0.1.0` does not have the 14 core functions in its
+- Plugin `local_fullmcp` **v0.1.2 or later** (v0.1.2 is code-style clean in CI and adds nothing else). `v0.1.0` does not have the 14 core functions in its
   service, so most server tools would fail. Install and the Moodle upgrade are covered by the plugin
   repo's README; the Moodle image gets it as a layer.
-- Server image `ghcr.io/tsopany/fullmcp-server:0.1.0`, built by the `image` workflow when the
-  `v0.1.0` tag of `moodle-fullmcp-server` is pushed. Until then the image does not exist.
+- Server image `ghcr.io/tsopany/fullmcp-server:0.1.1`, built by the `image` workflow when the
+  `v0.1.1` tag of `moodle-fullmcp-server` is pushed. Until then the image does not exist.
 
 ## Order of steps
 
 The token only exists after the plugin is installed, and the compose file needs it, so:
 
-1. Install the plugin (v0.1.1+) in Moodle and run the upgrade.
+1. Install the plugin (v0.1.2+) in Moodle and run the upgrade.
 2. Do section 1 (Moodle user, role, service, token).
 3. Do section 2 (both secrets in Infisical, whitelist in `lms/secrets.sh`).
 4. Only then add the service (section 3) and deploy `lms`. Rendered with an empty token, the
@@ -44,7 +49,7 @@ Add both names to the `envsubst` whitelist in `lms/secrets.sh`:
 
 ```yaml
     fullmcp:
-        image: ghcr.io/tsopany/fullmcp-server:0.1.0
+        image: ghcr.io/tsopany/fullmcp-server:0.1.1
         restart: always
         environment:
             # Must be the exact SITE_URL of Moodle. Moodle answers any other host name with a

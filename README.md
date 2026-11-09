@@ -14,7 +14,7 @@ repo above. The original copyright notice is kept in [LICENSE](LICENSE).
 
 ## Tools (v1)
 
-36 tools. Version 1 deliberately has **no tool that reads or changes other people's
+37 tools. Version 1 deliberately has **no tool that reads or changes other people's
 personal data** (users, enrolments, grades, submissions, quiz attempts, messages, roles) and
 **nothing that deletes courses or users**. The matching Moodle functions are not in the
 plugin's service either, so they would be refused by Moodle even if added here. The original
@@ -52,6 +52,7 @@ Write tools (only with `MOODLE_ALLOW_WRITE=true`):
 - `create_choice`: Create a Choice (poll) activity in a course.
 - `create_assignment`: Create an Assignment activity in a course.
 - `create_section`: Create a new section (topic) in a course.
+- `update_section`: Rename, re-describe and/or show or hide a course section.
 - `update_activity`: Rename and/or show/hide an existing activity.
 - `update_page`: Replace the content of an existing Page activity.
 - `move_activity`: Move an activity to a different course section.
