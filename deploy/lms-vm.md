@@ -203,7 +203,8 @@ Give Caddy the name as a network alias in `caddy/docker-compose.yaml`:
                       - lms.tsopany.com
 ```
 
-(the `networks:` list there becomes a map for that entry). Traffic then goes container -> Caddy.
+Compose needs the whole `networks:` list of the `caddy` service converted to a map (`name:` with nothing
+after it for the others, `aliases:` only under `lms_external`). Traffic then goes container -> Caddy.
 On STG the container reached `https://lms.tsopany.com` without this (a timeout would indicate the
 hairpin problem; HTTP 403 is Cloudflare, not hairpin).
 
