@@ -79,7 +79,7 @@ Needs Python 3.11+. `mcp` is pinned below 2 (2.x renamed `FastMCP`).
 
 With `FULLMCP_TRANSPORT=http` the server speaks MCP over streamable HTTP at `/mcp` (health check at
 `/health`), for example in a container next to Moodle. The image is built by `.github/workflows/image.yml`
-and pushed to `ghcr.io/tsopany/fullmcp-server` when a `v*` tag is pushed. Deployment notes for the VM:
+and pushed to `ghcr.io/tsopany/moodle-fullmcp-server` when a `v*` tag is pushed. Deployment notes for the VM:
 [deploy/lms-vm.md](deploy/lms-vm.md).
 
 | Variable | Meaning |

@@ -14,8 +14,8 @@ Prerequisites (versions that exist only once their tags are pushed):
 - Plugin `local_fullmcp` **v0.1.2 or later** (v0.1.2 is code-style clean in CI and adds nothing else). `v0.1.0` does not have the 14 core functions in its
   service, so most server tools would fail. Install and the Moodle upgrade are covered by the plugin
   repo's README; the Moodle image gets it as a layer.
-- Server image `ghcr.io/tsopany/fullmcp-server:0.1.1`, built by the `image` workflow when the
-  `v0.1.1` tag of `moodle-fullmcp-server` is pushed. Until then the image does not exist.
+- Server image `ghcr.io/tsopany/moodle-fullmcp-server:0.1.2`, built by the `image` workflow when the
+  `v0.1.2` tag of `moodle-fullmcp-server` is pushed. Until then the image does not exist.
 
 ## Order of steps
 
@@ -49,7 +49,7 @@ Add both names to the `envsubst` whitelist in `lms/secrets.sh`:
 
 ```yaml
     fullmcp:
-        image: ghcr.io/tsopany/fullmcp-server:0.1.1
+        image: ghcr.io/tsopany/moodle-fullmcp-server:0.1.2
         restart: always
         environment:
             # Must be the exact SITE_URL of Moodle. Moodle answers any other host name with a

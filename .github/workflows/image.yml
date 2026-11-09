@@ -1,6 +1,6 @@
 name: image
 
-# Builds ghcr.io/tsopany/fullmcp-server on version tags (v0.1.0 -> 0.1.0, 0.1 and latest).
+# Builds ghcr.io/tsopany/moodle-fullmcp-server on version tags (v0.1.0 -> 0.1.0, 0.1 and latest).
 on:
   push:
     tags: ['v*']
@@ -28,7 +28,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/tsopany/fullmcp-server
+          images: ghcr.io/tsopany/moodle-fullmcp-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
