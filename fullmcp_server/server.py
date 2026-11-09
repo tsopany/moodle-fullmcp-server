@@ -90,7 +90,9 @@ async def _call(wsfunction: str, params: dict[str, Any] | None = None) -> Any:
     if params:
         data.update(_flatten(params))
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    # Cloudflare in front of Moodle refuses Python's default User-Agent (HTTP 403), so send our own.
+    headers = {"User-Agent": f"fullmcp-server/{SERVER_VERSION}"}
+    async with httpx.AsyncClient(timeout=60.0, headers=headers) as client:
         resp = await client.post(REST_ENDPOINT, data=data)
         resp.raise_for_status()
 
@@ -204,7 +206,7 @@ def _validate_outline(outline: Any) -> list[str]:
 # READ TOOLS (always registered).
 # --------------------------------------------------------------------------- #
 
-SERVER_VERSION = "0.1.2"
+SERVER_VERSION = "0.1.3"
 
 
 @mcp.tool()

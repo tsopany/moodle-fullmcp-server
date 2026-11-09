@@ -2,5 +2,5 @@
 
 from fullmcp_server.server import main, mcp
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __all__ = ["main", "mcp", "__version__"]
